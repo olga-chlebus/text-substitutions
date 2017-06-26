@@ -23,14 +23,11 @@
         'temp1': 'minutes'
     };
 
-    var regexpSubstitutions = [];
-    for(key in textSubstitutions) {
-        var rSubst = {
-            regexpToReplace: new RegExp(key, 'ig'),
+    var regexpSubstitutions = Object.keys(textSubstitutions)
+        .map(key => ({
+            regexpToReplace: new RegExp(key, 'ig'), 
             textToReplaceWith: textSubstitutions[key]
-        };
-        regexpSubstitutions.push(rSubst);
-    };
+        }));
 
     var replace = function(node, regexpSubstitution) {
         node.data = node.data.replace(regexpSubstitution.regexpToReplace, regexpSubstitution.textToReplaceWith);
@@ -39,12 +36,9 @@
     var walker = document.createTreeWalker(document, NodeFilter.SHOW_TEXT, null, false);
     var currentTextNode;
 
-
     while (currentTextNode = walker.nextNode()) {
         if (currentTextNode.data.trim()) {
-            for(i in regexpSubstitutions) {
-                replace(currentTextNode,regexpSubstitutions[i]);
-            }
+            regexpSubstitutions.forEach((regexSub) => replace(currentTextNode, regexSub))
         }
     }
 
